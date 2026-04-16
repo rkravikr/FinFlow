@@ -16,20 +16,32 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
 
-if (!process.env.DATABASE_URL) {
+if (!process.env.DATABASE_URL && process.env.NODE_ENV === "production") {
   console.error("DATABASE_URL is missing in environment variables");
   process.exit(1);
 }
 
+// Updated CORS to be more flexible for deployment
 app.use(
   cors({
-    origin: CLIENT_ORIGIN,
+    origin: (origin, callback) => {
+      // Allow local development, the specified CLIENT_ORIGIN, and Vercel preview deployments
+      if (!origin || origin === CLIENT_ORIGIN || origin.endsWith("vercel.app")) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
+
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", message: "Backend is reachable" });
+});
 
 app.get("/", (req, res) => {
   res.json({ status: "ok", message: "FinFlow API" });
