@@ -2,7 +2,8 @@
 
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Neon](https://img.shields.io/badge/Neon-00E599?style=for-the-badge&logo=neon&logoColor=black)](https://neon.tech/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
@@ -22,7 +23,7 @@
 - **🎯 Savings Goals**: Visual trackers for your life milestones (e.g., "New Car", "Emergency Fund") with customizable color themes.
 - **📷 AI Receipt Scanning**: Built-in OCR (Optical Character Recognition) using Tesseract.js. Snap a photo of a receipt, and FinFlow automatically extracts the total amount.
 - **📊 CSV Import & Export**: Move your data freely. Export filtered views or import entire bank statements in seconds.
-- **🤖 Smart Auto-Categorization**: Custom rules engine that maps descriptions like "Starbucks" to "Food & Dining" automatically.
+- **🤖 Smart Auto-Categorization**: Custom rules engine that maps descriptions like "Starbucks" to "Food & Dining" automatically based on your keywords.
 - **💱 Multi-Currency Support**: Real-time exchange rates via Frankfurter API. View your net worth in your preferred currency (default: INR ₹).
 - **⚙️ Bulk Operations**: Advanced filtering and multi-selection for fast transaction management.
 
@@ -40,7 +41,8 @@ FinFlow uses a **Midnight Graphite** design system:
 
 - **Frontend**: React 18, Vite, TypeScript, Tailwind CSS, Recharts.
 - **Backend**: Node.js, Express.js, JWT Authentication.
-- **Database**: MongoDB (via Mongoose).
+- **Database**: Neon Postgres (Serverless PostgreSQL).
+- **ORM**: Drizzle ORM.
 - **Utilities**: Tesseract.js (OCR), PapaParse (CSV Processing).
 
 ---
@@ -48,47 +50,59 @@ FinFlow uses a **Midnight Graphite** design system:
 ## 🚀 Getting Started
 
 ### 1. Prerequisites
-- [Node.js](https://nodejs.org/) (v16+)
-- [MongoDB](https://www.mongodb.com/try/download/community) (Local or Atlas)
+- [Node.js](https://nodejs.org/) (v18+)
+- [Neon Account](https://neon.tech/) for Postgres hosting.
 
-### 2. Backend Setup (`/server`)
-1. **Navigate to server**:
-   ```bash
-   cd server
-   ```
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-3. **Environment Config**: Create a `.env` file:
-   ```env
-   PORT=5000
-   MONGODB_URI=your_mongodb_uri
-   JWT_SECRET=your_secret_key
-   CLIENT_ORIGIN=http://localhost:5173
-   ```
-4. **Start Server**:
-   ```bash
-   npm run dev
-   ```
+### 2. Environment Setup
+Create a `.env` file in the `server/` directory:
+```env
+PORT=5000
+DATABASE_URL=postgresql://user:pass@ep-hostname.region.pooler.neon.tech/neondb?sslmode=require
+JWT_SECRET=your_secret_key
+CLIENT_ORIGIN=http://localhost:5173
+```
 
-### 3. Frontend Setup (`/client`)
-1. **Navigate to client**:
-   ```bash
-   cd client
-   ```
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-3. **Connect to API**: Create a `.env` file:
-   ```env
-   VITE_API_BASE_URL=http://localhost:5000/api
-   ```
-4. **Launch Web App**:
-   ```bash
-   npm run dev
-   ```
+Create a `.env` file in the `client/` directory:
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+```
+
+### 3. Running Locally
+From the root directory, you can use the monorepo scripts:
+```bash
+# Install everything
+npm run install-all
+
+# Start backend (separate terminal)
+cd server && npm run dev
+
+# Start frontend (separate terminal)
+cd client && npm run dev
+```
+
+---
+
+## ☁️ Deployment Guide (Render)
+
+### 1. Backend Deployment
+1. Create a new **Web Service** on Render.
+2. Connect your GitHub repository.
+3. **Root Directory**: `server`
+4. **Build Command**: `npm install`
+5. **Start Command**: `npm start`
+6. Add your Environment Variables:
+   - `DATABASE_URL`: Your Neon connection string.
+   - `JWT_SECRET`: A secure random string.
+   - `CLIENT_ORIGIN`: Your deployed frontend URL.
+
+### 2. Frontend Deployment
+1. Create a new **Static Site** on Render.
+2. Connect your GitHub repository.
+3. **Root Directory**: `client`
+4. **Build Command**: `npm run build`
+5. **Publish Directory**: `dist`
+6. Add Environment Variable:
+   - `VITE_API_BASE_URL`: Your deployed backend API URL (e.g., `https://finflow-api.onrender.com/api`).
 
 ---
 
@@ -98,33 +112,15 @@ FinFlow uses a **Midnight Graphite** design system:
 ├── client/          # Vite + React Frontend
 │   ├── src/
 │   │   ├── auth/    # Login/Register Logic
-│   │   ├── currency/# Multi-currency logic
-│   │   ├── dashboard/# Recharts Analytics
+│   │   ├── db/      # (Internal) Shared Types
 │   │   ├── layout/  # Navigation & Shell
-│   │   ├── pages/   # Feature specific views
-│   │   └── style.css# Custom design tokens
+│   │   └── pages/   # Feature specific views
 ├── server/          # Express API Backend
 │   ├── src/
-│   │   ├── models/  # Mongoose Schemas (User, Transaction, Goal, Sub)
-│   │   ├── routes/  # API Endpoints
+│   │   ├── db/      # Drizzle Schema & Client
+│   │   ├── routes/  # SQL Standard Endpoints
 │   │   └── middleware/# Auth & Protection
 ```
-
----
-
-## 🤝 Contributing
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📄 License
-Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
