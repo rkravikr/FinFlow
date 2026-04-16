@@ -41,8 +41,14 @@ app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/goals", goalRoutes);
 app.use("/api/category-rules", categoryRuleRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log("Connected to Neon Postgres via Drizzle");
-});
+// Export for Vercel serverless compatibility
+export default app;
+
+// Only listen if running directly (not via serverless)
+if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log("Connected to Neon Postgres via Drizzle");
+  });
+}
 

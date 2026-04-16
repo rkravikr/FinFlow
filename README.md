@@ -82,27 +82,35 @@ cd client && npm run dev
 
 ---
 
-## ☁️ Deployment Guide (Render)
+## ☁️ Deployment Guide
 
-### 1. Backend Deployment
+### Option 1: Render (Recommended for Always-On Server)
+**Backend Deployment:**
 1. Create a new **Web Service** on Render.
-2. Connect your GitHub repository.
-3. **Root Directory**: `server`
-4. **Build Command**: `npm install`
-5. **Start Command**: `npm start`
-6. Add your Environment Variables:
-   - `DATABASE_URL`: Your Neon connection string.
-   - `JWT_SECRET`: A secure random string.
-   - `CLIENT_ORIGIN`: Your deployed frontend URL.
+2. **Root Directory**: `server`
+3. **Build Command**: `npm install`
+4. **Start Command**: `npm start`
+5. Add Env Vars: `DATABASE_URL`, `JWT_SECRET`, `CLIENT_ORIGIN`.
 
-### 2. Frontend Deployment
-1. Create a new **Static Site** on Render.
-2. Connect your GitHub repository.
-3. **Root Directory**: `client`
-4. **Build Command**: `npm run build`
-5. **Publish Directory**: `dist`
-6. Add Environment Variable:
-   - `VITE_API_BASE_URL`: Your deployed backend API URL (e.g., `https://finflow-api.onrender.com/api`).
+**Frontend Deployment:**
+1. Create a new **Static Site**.
+2. **Root Directory**: `client`
+3. **Build Command**: `npm run build`
+4. **Publish Directory**: `dist`
+5. Add Env Var: `VITE_API_BASE_URL`.
+
+### Option 2: Vercel (Serverless functions)
+**Backend Deployment:**
+1. Import your repo to Vercel.
+2. **Root Directory**: `server`
+3. Vercel will automatically detect the `vercel.json` and deploy it as a Serverless function.
+4. Add Environment Variables in the Vercel dashboard.
+
+**Frontend Deployment:**
+1. Import your repo to Vercel.
+2. **Root Directory**: `client`
+3. Vercel will detect Vite and deploy it automatically.
+4. Add `VITE_API_BASE_URL` in the environment settings.
 
 ---
 
